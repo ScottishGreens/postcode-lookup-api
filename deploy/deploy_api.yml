@@ -37,19 +37,9 @@
     # Install Unicorn init scripts
     - { role: unicorn }
 
-    # Install Sidekiq worker init scripts
-    - { role: sidekiq }
-
     # Install Nginx config
     - { role: nginx }
 
-    # Install RPush Daemon
-    - { role: rpush }
-
     # Setup a service for consul (to be used by ha_proxy)
     - { role: consul_service, consul_services: { name: "t5", tags: [], port: 80, interval: "10s", type: "rails" } }
-    - { role: consul_service, consul_services: { name: "t5", tags: [], interval: "10s", type: "sidekiq"         } }
-
-    # Done!
-    #- { role: hipchat_announce, room: "engineering", colour: "green", message: "Deployed FarmGeek Web API" }
 

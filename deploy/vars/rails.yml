@@ -6,7 +6,7 @@ rails: {
     RAILS_ENV: "production"
   },
   bundler:  { without: ['development', 'test'] },
-  rake:     { do: ['db:extensions', 'db:migrate', 'import:db', 'assets:precompile', 'db:seed'] },
+  rake:     { do: ['db:migrate', 'assets:precompile', 'db:seed'] },
   unicorn:  {
     worker_processes: 2,
     directory: "{{ repository.dest }}/src",
