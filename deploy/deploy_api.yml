@@ -22,11 +22,11 @@
   roles:
 
     # Setup environment variables inside consul
-    - { role: consul_set, key: "t5/db/username",       value: "{{ db.username }}" }
-    - { role: consul_set, key: "t5/db/password",       value: "{{ db.password }}" }
-    - { role: consul_set, key: "t5/db/name",           value: "{{ db.name     }}" }
-    - { role: consul_set, key: "t5/secret_key_base",   value: "{{ rails.environment_variables.SECRET_KEY_BASE }}" }
-    - { role: consul_set, key: "t5/devise/secret_key", value: "{{ rails.environment_variables.DEVISE_SECRET_KEY }}" }
+    - { role: consul_set, key: "greens/postcode/db/username",       value: "{{ db.username }}" }
+    - { role: consul_set, key: "greens/postcode/db/password",       value: "{{ db.password }}" }
+    - { role: consul_set, key: "greens/postcode/db/name",           value: "{{ db.name     }}" }
+    - { role: consul_set, key: "greens/postcode/secret_key_base",   value: "{{ rails.environment_variables.SECRET_KEY_BASE }}" }
+    - { role: consul_set, key: "greens/postcode/devise/secret_key", value: "{{ rails.environment_variables.DEVISE_SECRET_KEY }}" }
 
     # Clone latest version of repository
     - { role: repository_pull }
