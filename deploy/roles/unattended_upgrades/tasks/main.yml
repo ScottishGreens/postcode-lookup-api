@@ -1,0 +1,7 @@
+---
+
+- name: Install Unattended Upgrades Package
+  apt: pkg=unattended-upgrades state=present
+
+- name: Enable Unattended Upgrades
+  template: src=10periodic dest=/etc/apt/apt.conf.d/10periodic

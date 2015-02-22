@@ -1,0 +1,121 @@
+---
+- hosts: all
+  user: root
+  sudo: yes
+  tasks:
+    - name: Main | Updating Ubuntu
+      apt: upgrade=dist update_cache=true
+
+    - name: Main | Downloading ansible deps
+      apt: name={{ item }} state=present
+      with_items:
+        - python-yaml
+        - python-jinja2
+        - python-paramiko
+        - python-keyczar
+        - python-mysqldb
+        - git
+        - vim
+
+    - group: name=deploy state=present
+
+    - name: Main | Add deploy user
+      user: name=deploy
+            shell=/bin/bash
+            group=deploy
+            groups=sudo
+            append=yes
+
+    - name: Main | Add SSH Key to deploy user
+      authorized_key: user=deploy
+                      key="{{ item }}"
+      with_file:
+        - public_keys/id_rsa.pub
+
+    - name: Main | Allow passwordless sudo for sudo group users
+      lineinfile: 'dest=/etc/sudoers state=present regexp="^%sudo ALL\=" line="%sudo ALL=(ALL) NOPASSWD: ALL" validate="visudo -cf %s"'
+
+# Setup the server nodes
+- hosts: consul_servers
+  user: deploy
+  sudo: true
+  serial: 1
+  vars:
+    - consul: {
+      datacenter:  "farmgeek_lon1",
+      version:     "0.4.1",
+      server:      true,
+      setup:       true
+    }
+  roles:
+    - { role: consul }
+
+# Setup the client nodes
+- hosts: consul_clients
+  user: deploy
+  sudo: true
+  serial: 1
+  vars:
+    - consul: {
+      datacenter:  "farmgeek_lon1",
+      version:     "0.4.1",
+      server:      false,
+      setup:       true
+    }
+  roles:
+    - { role: consul }
+
+- hosts: all
+  user: deploy
+  sudo: true
+  vars:
+    - datadog: { key: 1111111111111111111111111111111 }
+  roles:
+    - { role: unattended_upgrades }
+    #- { role: datadog_install     }
+
+
+- hosts: api
+  user: deploy
+  sudo: true
+  vars:
+    - nginx: { action: 'setup' }
+    - rbenv: {
+      user:     deploy,
+      version:  "2.2.0",
+      default:  "2.2.0"
+    }
+  #- datadog: {
+  #    nginx: [ "https://api.farmer.io/nginx_status" ]
+  #  }
+  roles:
+    - { role: timezone         }
+    - { role: fail2ban         }
+    - { role: force_xterm_bash }
+    # Clone latest version of repository
+    - { role: repository_setup }
+
+    # Setup default nginx configuration
+    - { role: nginx }
+
+    # Install a Redis server
+    - { role: redis }
+
+    # Install Rbenv, build and install the rubies
+    - { role: rbenv }
+
+    # Install Datadog Nginx Config
+    #- { role: datadog_nginx }
+
+- hosts: postgres_master
+  user: deploy
+  sudo: true
+  vars_files:
+    - vars/db.yml
+  roles:
+    # Install Postgres
+    - { role: postgres_install }
+    # Create Postgres user & Database
+    - { role: postgres_db_setup }
+    - { role: postgres_extensions }
+    - { role: consul_service, consul_services: { name: "postgres", tags: [], port: 5432, interval: "10s", type: "postgres" } }

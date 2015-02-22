@@ -1,0 +1,21 @@
+---
+
+- name: Ensure Nginx's presence
+  apt: name=nginx state=present
+  when: nginx.action == 'setup'
+
+- name: Ensure base nginx configuration's presence
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+  when: nginx.action == 'setup'
+
+- name: Start Nginx Service
+  service: name=nginx state=started enabled=true
+  when: nginx.action == 'setup'
+
+- name: Ensure rails specific config for {{ nginx.vhost }}
+  template: src=rails.conf dest=/etc/nginx/conf.d/{{ nginx.vhost|lower|replace('.', '_')|replace('*', '_') }}.conf
+  notify:
+    - restart nginx
+  when: nginx.action == 'instance' and 'rails' in nginx.types

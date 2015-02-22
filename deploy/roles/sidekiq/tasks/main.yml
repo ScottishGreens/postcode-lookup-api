@@ -1,0 +1,14 @@
+---
+
+- name: Check for Sidekiq
+  stat: path={{ rails.unicorn.directory }}/config/sidekiq.yml
+  register: is_sidekiq
+
+- name: Install Sidekiq upstart script if neccessary.
+  template: src=sidekiq.sh.j2 dest=/etc/init.d/sidekiq_{{ repository.dest|replace('/var/www/', '') }} mode=755 owner=root group=root
+  when: is_sidekiq.stat.exists
+
+- name: Ensure sidekiq service is running
+  sudo: True
+  service: name=sidekiq_{{ repository.dest|replace('/var/www/', '') }} state=restarted enabled=true
+  when: is_sidekiq.stat.exists

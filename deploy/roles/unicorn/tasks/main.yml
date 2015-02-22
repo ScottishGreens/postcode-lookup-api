@@ -1,0 +1,17 @@
+---
+
+- name: Ensure there's no upstart config of the same place
+  file: path=/etc/init/unicorn_{{ nginx.vhost|lower|replace('.', '_') }}.conf state=absent
+
+- name: Ensure Unicorn Init configuration file for {{ nginx.vhost }}
+  template: src=unicorn.sh dest=/etc/init.d/unicorn_{{ nginx.vhost|lower|replace('.', '_') }} mode=755 owner=root group=root
+
+- name: Ensure init runs on startup
+  service: name=unicorn_{{ nginx.vhost|lower|replace('.', '_') }} enabled=true
+
+- name: Upgrade unicorn
+  command: service unicorn_{{ nginx.vhost|lower|replace('.', '_') }} upgrade
+  ignore_errors: yes
+
+#- name: Start unicorn
+#  command: service unicorn_{{ nginx.vhost|lower|replace('.', '_') }} start

@@ -1,0 +1,7 @@
+init_config:
+
+instances:
+   -   host: localhost
+       port: 5432
+       username: {{ datadog.postgresql.user }}
+       password: {{ datadog.postgresql.password }}

@@ -1,0 +1,9 @@
+init_config:
+
+instances:
+    # For every instance, you have an `nginx_status_url` and (optionally)
+    # a list of tags.
+
+  {% for url in datadog.nginx %}
+    -   nginx_status_url: {{ url }}
+  {% endfor %}

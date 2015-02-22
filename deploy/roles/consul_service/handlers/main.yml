@@ -1,0 +1,3 @@
+---
+- name: reload consul
+  service: name=consul state=reloaded

@@ -1,0 +1,12 @@
+{
+	"service": {
+		"name": "postgres",
+		"tags": ["postgres"],
+		"port": 5432,
+		"check": {
+			"notes": "Check that Postgres is running",
+			"script": "/usr/local/bin/check_postgres.sh",
+			"interval": "10s"
+		}
+	}
+}

@@ -1,0 +1,13 @@
+---
+
+# This role sets the timezone and ensures ntp is installed
+# to keep the clock in sync.
+
+- name: Set Timezone to {{ zone }}
+  shell: echo "{{ zone }}" | sudo tee /etc/timezone
+
+- name: Reconfigure tzdata package
+  shell: dpkg-reconfigure --frontend noninteractive tzdata
+
+- name: Ensure ntp is installed
+  apt: pkg=ntp state=present

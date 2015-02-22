@@ -1,0 +1,17 @@
+- name: Install Postgres-datadog integration deps
+  apt: name=python-psycopg2
+
+- name: Install a read-only datadog user with access to the stats DB
+  postgresql_user:
+    name={{ datadog.postgresql.user }}
+    db={{ datadog.postgresql.db }}
+    password={{ datadog.postgresql.password }}
+    priv=CONNECT/pg_stat_database:ALL
+    state=present
+  sudo_user: postgres
+
+- name: Install datadog postgres configuration
+  template: src=postgres.yaml dest=/etc/dd-agent/conf.d/postgres.yaml
+
+- name: Restart Datadog
+  service: name=datadog-agent state=restarted

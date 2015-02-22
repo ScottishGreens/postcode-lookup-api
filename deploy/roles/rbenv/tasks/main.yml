@@ -1,0 +1,77 @@
+- name: Install ruby-building prerequesites
+  apt: name={{ item }} state=installed
+  with_items:
+    - autoconf
+    - automake
+    - bison
+    - build-essential
+    - curl
+    - exuberant-ctags
+    - git-core
+    - libc6-dev
+    - libffi6
+    - libffi-dev
+    - libncurses5-dev
+    - libreadline-dev
+    - libreadline6
+    - libreadline6-dev
+    - libsqlite3-0
+    - libsqlite3-dev
+    - libssl-dev
+    - libtool
+    - libxml2-dev
+    - libxslt1-dev
+    - libyaml-dev
+    - openssl
+    - zlib1g
+    - zlib1g-dev
+
+- name: Install rbenv
+  sudo: false
+  git: repo=git://github.com/sstephenson/rbenv.git 
+       dest=~{{ rbenv.user }}/.rbenv
+       accept_hostkey=True
+
+- name: Create bash fragments directory
+  sudo: false
+  file: dest=~{{ rbenv.user }}/.bash.d/ state=directory
+
+- name: Install rbenv bash file
+  sudo: false
+  copy: src=50_rbenv.bash dest=~{{ rbenv.user }}/.bash.d/50_rbenv.bash mode=700 owner={{ rbenv.user }}
+
+- name: Source rbenv bash file within bashrc
+  sudo: false
+  lineinfile: dest=~{{ rbenv.user }}/.bash_profile regexp="rbenv" insertafter=EOF line="source ~/.bash.d/50_rbenv.bash" create=yes
+
+- name: Create rbenv plugin directory
+  sudo: false
+  file: path=~{{ rbenv.user }}/.rbenv/plugins/ owner={{ rbenv.user }} group={{ rbenv.user }} mode=0755 state=directory
+
+- name: Install ruby-build
+  sudo: false
+  git: repo=git://github.com/sstephenson/ruby-build.git
+       dest=~{{ rbenv.user }}/.rbenv/plugins/ruby-build
+       accept_hostkey=True
+
+- name: Add a production ready global .gemrc
+  sudo: false
+  copy: src=gemrc dest=~{{ rbenv.user }}/.gemrc owner={{ rbenv.user }} group={{ rbenv.user }} mode=0750
+
+- name: Check for Ruby Version
+  sudo: false
+  shell: cd; bash -lc "rbenv versions | grep {{ rbenv.version }} | tr '*' ' ' | sed -e 's/\s\+//' | cut -f1 -d' '"
+  register: ruby
+
+- name:  Install ruby
+  sudo:  false
+  shell: cd; bash -lc "CONFIGURE_OPTS=--disable-install-rdoc rbenv install {{ rbenv.version }}"
+  when:  ruby.stdout != rbenv.version
+
+- name: Set global ruby version
+  sudo: false
+  shell: cd; bash -lc "rbenv global {{ rbenv.default }}"
+
+- name: Install Bundler
+  sudo: false
+  shell: cd; bash -lc "gem install bundler"

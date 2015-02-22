@@ -1,0 +1,9 @@
+---
+
+# This role installs Redis
+
+- name: Ensure Redis's presence
+  apt: name=redis-server state=present
+
+- name: Ensure Redis has been started
+  service: name=redis-server state=started enabled=true

@@ -1,0 +1,11 @@
+{
+	"service": {
+		"name": "{{ consul_services.type }}_{{ consul_services.name }}",
+		"tags": {{ consul_services.tags|safe }},
+		"check": {
+			"notes": "Check that {{ consul_services.type }} {{ consul_services.name }} is running",
+			"script": "/usr/local/bin/check_sidekiq_{{ consul_services.name }}.sh {{ consul_services.name }}",
+			"interval": "{{ consul_services.interval }}"
+		}
+	}
+}

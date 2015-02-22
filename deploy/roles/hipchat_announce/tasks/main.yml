@@ -1,0 +1,5 @@
+- hipchat:
+    token="{{ hipchat.token }}"
+    room="{{ room }}"
+    msg="{{ message }}"
+    color="{{ colour }}"

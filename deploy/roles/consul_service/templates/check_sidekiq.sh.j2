@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+out=`ps -ef | grep 'sidekiq' | grep $1 | grep -v grep`
+
+if test -z "$out"
+then
+    # Check is failing
+    exit 2
+else
+    # Check is passing
+    exit 0
+fi
+

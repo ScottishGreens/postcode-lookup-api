@@ -1,0 +1,39 @@
+- name: Install python-software-properties
+  apt: pkg=software-properties-common state=installed
+
+- name: Add Postgres Repository Key
+  apt_key: id=ACCC4CF8 url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+
+- name: Add Postgres Repository
+  apt_repository: repo="{{ postgres.repo }}" state=present
+
+- name: Install Postgres packages
+  apt: pkg={{ item }}-{{ postgres.version }} state=installed update-cache=yes
+  register: postgresql_install
+  with_items:
+    - postgresql
+    - postgresql-client
+    - postgresql-contrib
+
+- name: Install Development Header Files
+  apt: pkg={{ item }} state=installed
+  when: postgres.development_headers == true
+  with_items:
+    - libpq-dev
+    - python-psycopg2
+
+- name: Install Postgresql config file
+  template:
+    src=postgresql_{{ postgres.version }}.conf
+    dest=/etc/postgresql/{{ postgres.version }}/main/postgresql.conf
+    owner=postgres
+    group=postgres
+
+- name: Open Postgres to local network
+  lineinfile:
+      dest=/etc/postgresql/{{ postgres.version }}/main/pg_hba.conf
+      line="{{ postgres.config.network_exposure_rule }}"
+      regexp="{{ansible_eth1['ipv4']['network']}}"
+
+- name: Restart Postgres
+  service: name=postgresql state=restarted

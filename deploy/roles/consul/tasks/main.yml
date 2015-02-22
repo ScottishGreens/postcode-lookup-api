@@ -1,0 +1,58 @@
+---
+
+# This role installs and configures consul in both server and client
+# modes.
+
+- name: Ensure app apt dependencies are installed
+  apt: pkg={{item}} state=installed
+  with_items:
+    - unzip
+    - dnsmasq
+    - python-httplib2
+  when: consul.setup == true
+
+- name: Ensure correct consul version is installed
+  shell: consul version | grep "{{ consul.version }}"
+  register: is_consul
+  ignore_errors: true
+  when: consul.setup == true
+
+- name: Ensure Consul's presence
+  get_url: url="https://dl.bintray.com/mitchellh/consul/{{ consul.version }}_linux_amd64.zip" dest=/tmp/consul_{{ consul.version }}.zip mode=0644
+  when: is_consul|failed
+
+- name: Ensure consul is gracefully removed from pool
+  shell: consul leave
+  ignore_errors: true
+  when: is_consul|failed
+
+- name: Ensure consul service has stopped
+  ignore_errors: true
+  service: name=consul state=stopped
+  when: is_consul|failed
+
+- name: Unzip & Install Consul binary
+  shell: unzip -qo /tmp/consul_{{ consul.version }}.zip -d /usr/local/bin/
+  when: is_consul|failed
+
+- name: Ensure Consul's config directory
+  file: path=/etc/consul.d state=directory
+  when: consul.setup == true
+
+- name: Ensure Consul configuration
+  template: src=consul.json.j2 dest=/etc/consul.d/consul.json
+  when: consul.setup == true
+
+- name: Build Consul service
+  template: src=initscript.sh.j2 dest=/etc/init.d/consul mode=755 owner=root group=root
+  when: consul.setup == true
+
+- name: Ensure Consul service
+  service: name=consul enabled=yes state=restarted
+  when: consul.setup == true
+
+- name: Ensure DNSMasq is setup to forward to consul
+  copy: src=dnsmasq.conf dest=/etc/dnsmasq.d/10-consul
+
+- name: Ensure DNSMasq service
+  service: name=dnsmasq enabled=yes state=restarted

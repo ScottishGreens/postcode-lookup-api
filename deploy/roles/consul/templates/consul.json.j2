@@ -1,0 +1,15 @@
+{
+  "datacenter" : "{{ consul.datacenter }}",
+  "data_dir"   : "/opt/consul",
+  "log_level"  : "INFO",
+  "node_name"  : "{{ ansible_nodename }}",
+  "server"     :  {{ consul.server|lower }},
+  "bootstrap"  :  false,
+  "bind"       : "{{ ansible_eth1.ipv4.address }}",
+  "start_join" :  [
+    {% for host in groups['consul_servers'] %}
+      "{{ hostvars[host]['ansible_eth1']['ipv4']['address'] }}"{% if not loop.last %}{{ ","  }}{% endif %}
+
+    {% endfor %}
+  ]
+}

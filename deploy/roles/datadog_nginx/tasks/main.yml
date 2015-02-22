@@ -1,0 +1,5 @@
+- name: Install configs for datadog
+  template: src=nginx.yaml dest=/etc/dd-agent/conf.d/nginx.yaml
+
+- name: Restart datadog-agent
+  service: name=datadog-agent state=restarted

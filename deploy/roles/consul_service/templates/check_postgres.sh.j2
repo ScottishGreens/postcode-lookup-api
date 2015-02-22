@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+LS=`pg_lsclusters -h`
+# no clusters -> unknown status
+[ -n "$LS" ] || exit 4
+
+if echo $LS | grep "online"
+then
+        exit 0;
+else
+        exit 2;
+fi

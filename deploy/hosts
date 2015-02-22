@@ -1,0 +1,8 @@
+[consul_servers]
+postcodelookup.farmer.io
+
+[api]
+postcodelookup.farmer.io
+
+[postgres_master]
+postcodelookup.farmer.io

@@ -1,0 +1,7 @@
+---
+
+- name: Ensure git's presence
+  apt: pkg=git state=present
+
+- name: Ensure /var/www's presence
+  file: dest=/var/www owner=deploy group=www-data mode=755 state=directory

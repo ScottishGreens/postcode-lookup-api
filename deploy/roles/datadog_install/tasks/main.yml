@@ -1,0 +1,8 @@
+  - name: Check if Datadog is installed
+    command: dd-agent
+    register: dd_agent
+    ignore_errors: true
+
+  - name: Install Datadog
+    shell: DD_API_KEY={{ datadog.key }} bash -c "$(curl -L https://raw.githubusercontent.com/DataDog/dd-agent/master/packaging/datadog-agent/source/install_agent.sh)"
+    when: dd_agent.stdout.find('command not found') != -1

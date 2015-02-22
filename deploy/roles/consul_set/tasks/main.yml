@@ -1,0 +1,10 @@
+---
+
+# This role allows us to set values to consul
+
+- name: "Set {{ key }} to {{ value }}"
+  uri: url=http://localhost:8500/v1/kv/{{ key }} method=PUT body={{ value }} return_content=yes
+  register: response
+
+- action: fail
+  when: response.content != "true"

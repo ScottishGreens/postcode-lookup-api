@@ -1,0 +1,11 @@
+---
+
+# This role installs fail2ban and configures the local jail.
+
+- name: Ensure Fail2ban's presence
+  apt: name=fail2ban state=present
+
+- name: Ensure configuration's presence
+  copy: src=jail.local dest=/etc/fail2ban/jail.local
+  notify:
+    - restart fail2ban

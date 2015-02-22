@@ -1,0 +1,7 @@
+consul_services: {
+  name: "api",
+  tags: [],
+  port: 80,
+  interval: "10s",
+  type: 'rails'
+}

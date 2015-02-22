@@ -1,0 +1,20 @@
+---
+
+- name: Install gems with Bundler
+  sudo: False
+  shell: bash -lc "cd {{ rails.unicorn.directory }} && bundle install --deployment --without {{ rails.bundler.without|join(' ') }}"
+
+- name: Run rake commands
+  sudo: False
+  shell: bash -lc "cd {{ rails.unicorn.directory }} && bundle exec rake {{ item }}"
+  with_items: rails.rake.do
+  environment: rails.environment_variables
+
+- name: Install unicorn.rb file in config directory
+  template: src=unicorn.rb.j2 dest="{{ rails.unicorn.directory }}/config/unicorn.rb"
+
+- name: Install default directories
+  file: path="{{ rails.unicorn.directory }}/{{ item }}" state=directory mode=777 owner=deploy group=www-data
+  with_items:
+    - tmp
+    - tmp/pids

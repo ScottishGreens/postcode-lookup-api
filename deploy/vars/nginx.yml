@@ -1,0 +1,7 @@
+nginx: {
+  action: 'instance',
+  types:  ['rails'],
+  vhost:  'postcodelookup.farmer.io',
+  no_redirect: true
+}
+

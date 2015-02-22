@@ -1,0 +1,5 @@
+- name: Configure datadog to use haproxy
+  template: src=haproxy.yaml dest=/etc/dd-agent/conf.d/haproxy.yaml
+
+- name: Restart datadog
+  service: name=datadog-agent state=restarted

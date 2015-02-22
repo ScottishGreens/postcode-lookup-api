@@ -1,0 +1,13 @@
+---
+
+- name: Ensure there's no upstart config of the same place
+  file: path=/etc/init.d/rpush_{{ nginx.vhost|lower|replace('.', '_') }} state=absent
+
+- name: Ensure Rpush Init configuration file for {{ nginx.vhost }}
+  template: src=rpush.sh.jinja2 dest=/etc/init.d/rpush_{{ nginx.vhost|lower|replace('.', '_') }} mode=755 owner=root group=root
+
+- name: Ensure init runs on startup
+  service: name=rpush_{{ nginx.vhost|lower|replace('.', '_') }} enabled=true
+
+- name: Restart Rpush
+  service: name=rpush_{{ nginx.vhost|lower|replace('.', '_') }} state=restarted

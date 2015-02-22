@@ -1,0 +1,74 @@
+[DEFAULT]
+
+ignoreip  = 127.0.0.1/8 192.168.1.0/24 8.8.8.8 8.8.4.4
+bantime   = 3600
+findtime  = 600
+maxretry  = 3
+backend   = auto
+usedns    = warn
+destemail = hello@farmer.io
+banaction = iptables-multipart
+mta       = sendmail
+protocol  = tcp
+chain     = INPUT
+
+action_ = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+
+action_mw = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+              %(mta)s-whois[name=%(__name__)s, dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s"]
+
+action_mwl = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+               %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+
+action = %(action_)s
+
+[ssh]
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 3
+
+[ssh-ddos]
+enabled  = true
+port     = ssh
+filter   = sshd-ddos
+logpath  = /var/log/auth.log
+maxretry = 3
+
+[ssh-route]
+enabled  = false
+filter   = sshd
+action   = route
+logpath  = /var/log/sshd.log
+maxretry = 3
+
+[ssh-iptables-ipset4]
+enabled   = false
+port      = ssh
+filter    = sshd
+banaction = iptables-ipset-proto4
+logpath   = /var/log/sshd.log
+maxretry  = 3
+
+[ssh-iptables-ipset6]
+enabled   = false
+port      = ssh
+filter    = sshd
+banaction = iptabled-ipset-proto6
+maxretry  = 3
+
+[asterisk-tcp]
+enabled  = false
+filter   = asterisk
+port     = 5060,5061
+protocol = tcp
+logpath  = /var/log/asterisk/messages
+
+[asterisk-udp]
+enabled  = false
+filter   = asterisk
+port     = 5060,5061
+protocol = udp
+logpath  = /var/log/asterisk/messages
+

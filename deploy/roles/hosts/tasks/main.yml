@@ -1,0 +1,10 @@
+---
+
+# This role ensures the /etc/hosts file has a hostname in it.
+
+- name: Ensure localhost in /etc/hosts file
+  lineinfile: dest=/etc/hosts state=present line='127.0.0.1 localhost' insertafter=EOF owner=root group=root mode=0644
+
+- name: Ensure line in /etc/hosts file
+  lineinfile: dest=/etc/hosts state=present regexp='{{hostname}}' line='127.0.0.1 {{ hostname }}' insertafter=EOF owner=root group=root mode=0644
+

@@ -1,0 +1,15 @@
+rails: {
+  action:  'instance',
+  environment_variables: {
+    SECRET_KEY_BASE: "7wumRvwBPNltVlT238B0vXBeU62uydZk4CapGs4O0XmI7zCx7kiegXheF0rC9NZ",
+    DEVISE_SECRET_KEY: "QmHVZeGe90aWxYUZ1KuMiuOdHIuGLpZu9mdHpjFcfWS04cpZmbfWXbEWMHMpuVU",
+    RAILS_ENV: "production"
+  },
+  bundler:  { without: ['development', 'test'] },
+  rake:     { do: ['db:extensions', 'db:migrate', 'import:db', 'assets:precompile', 'db:seed'] },
+  unicorn:  {
+    worker_processes: 2,
+    directory: "{{ repository.dest }}/src",
+    directory_name: "{{ nginx.vhost|lower|replace('.', '_') }}"
+  }
+}

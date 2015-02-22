@@ -1,0 +1,24 @@
+---
+
+- name: Ensure the Postgres user exists
+  user: name=postgres state=present
+  sudo_user: root
+
+- name: Ensure the new Postgres user "{{ db.username }}" exists
+  user: name={{ db.username }} state=present
+  sudo_user: root
+
+- name: Ensure the database for {{ db.username }}
+  postgresql_user:
+    user={{ db.username }}
+    password={{ db.password }}
+    role_attr_flags=CREATEDB,NOSUPERUSER
+    state=present
+  sudo_user: postgres
+
+- name: Ensure the database
+  postgresql_db:
+    name={{ db.name }}
+    owner={{ db.username }}
+    state=present
+  sudo_user: postgres

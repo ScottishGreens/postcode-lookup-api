@@ -1,0 +1,10 @@
+---
+
+# This role sets the bashrc of the current user as well as root to have "export TERM=xterm".
+# This stops weird errors when you ssh in with non-xterm-based terminals
+
+- name: Ensure TERM=xterm
+  lineinfile: dest=~/.bashrc line='export TERM=xterm' insertafter=EOF mode=0644
+
+- name: Ensure TERM=xterm for root
+  lineinfile: dest=/root/.bashrc line='export TERM=xterm' insertafter=EOF mode=0644 owner=root group=root

@@ -1,0 +1,57 @@
+---
+
+### Postgres
+
+- name: Ensure Postgres checking script for postgres
+  template: src=check_postgres.sh.j2 dest=/usr/local/bin/check_postgres.sh mode=0755
+  notify:
+    - reload consul
+  when: "'postgres' == consul_services.type"
+
+- name: Ensure Postgres Service Definition for postgres
+  template: src=postgres.json.j2 dest=/etc/consul.d/postgres.json
+  notify:
+    - reload consul
+  when: "'postgres' == consul_services.type"
+
+### Nginx
+
+- name: Ensure Nginx checking script for nginx
+  template: src=check_nginx.sh.j2 dest=/usr/local/bin/check_nginx.sh mode=0755
+  notify:
+    - reload consul
+  when: "'nginx' == consul_services.type"
+
+- name: Ensure Nginx Service Definition for nginx
+  template: src=nginx.json.j2 dest=/etc/consul.d/nginx.json
+  notify:
+    - reload consul
+  when: "'nginx' == consul_services.type"
+
+### Rails App
+
+- name: Ensure rails app checking script for {{ consul_services.name }}
+  template: src=check_rails.sh.j2 dest=/usr/local/bin/check_rails_{{ consul_services.name }}.sh mode=0755
+  notify:
+    - reload consul
+  when: "'rails' == consul_services.type"
+
+- name: Ensure Rails app Service Definition for {{ consul_services.name }}
+  template: src=rails.json.j2 dest=/etc/consul.d/rails_{{ consul_services.name }}.json
+  notify:
+    - reload consul
+  when: "'rails' == consul_services.type"
+
+### Sidekiq Worker Pool
+
+- name: Ensure sidekiq app checking script for {{ consul_services.name }}
+  template: src=check_sidekiq.sh.j2 dest=/usr/local/bin/check_sidekiq_{{ consul_services.name }}.sh mode=0755
+  notify:
+    - reload consul
+  when: "'sidekiq' == consul_services.type"
+
+- name: Ensure Sidekiq Service Definition for {{ consul_services.name }}
+  template: src=sidekiq.json.j2 dest=/etc/consul.d/sidekiq_{{ consul_services.name }}.json
+  notify:
+    - reload consul
+  when: "'sidekiq' == consul_services.type"

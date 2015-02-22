@@ -1,0 +1,6 @@
+---
+
+# This role allows us to remove values from consul
+
+- name: "Remove consul key: {{ key }}"
+  uri: url=http://localhost:8500/v1/kv/{{ key }}?recurse method=DELETE return_content=yes status_code=200

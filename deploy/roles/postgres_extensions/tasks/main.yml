@@ -1,0 +1,16 @@
+---
+
+- name: Install Postgres Schemas on {{ db.name }}
+  shell: psql -d {{ db.name }} -c 'CREATE SCHEMA IF NOT EXISTS {{ item.schema }};'
+  with_items: db.extensions
+  sudo_user: postgres
+
+- name: Install Public access to schema {{ db.name }}
+  shell: psql -d {{ db.name }} -c 'GRANT usage ON SCHEMA {{ item.schema }} to public;'
+  with_items: db.extensions
+  sudo_user: postgres
+
+- name: Install Extensions to schema {{ db.name }}
+  shell: psql -d {{ db.name }} -c 'CREATE EXTENSION IF NOT EXISTS "{{ item.name }}" SCHEMA {{ item.schema }};'
+  with_items: db.extensions
+  sudo_user: postgres

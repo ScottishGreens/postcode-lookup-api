@@ -1,0 +1,6 @@
+init_config:
+
+instances:
+    -   username: {{ haproxy.stats.username }}
+        password: {{ haproxy.stats.password }}
+        url: http://localhost:{{ haproxy.stats.port }}/admin?stats

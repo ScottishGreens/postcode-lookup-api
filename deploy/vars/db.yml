@@ -1,0 +1,28 @@
+---
+postgres: {
+  repo: "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main 9.4",
+  version: 9.4,
+  development_headers: true,
+  config: {
+    shared_buffers:                "24MB",
+    work_mem:                      "1MB",
+    checkpoint_segments:           "3",
+    checkpoint_completion_target:  "0.5",
+    effective_cache_size:          "128MB",
+
+    # Expose Postgres to private local network
+    network_exposure_rule:         "host all all {{ ansible_eth1['ipv4']['network'] }} {{ ansible_eth1['ipv4']['netmask'] }} password",
+    # Listen for connections from the private local network
+    listen_addresses:              "'localhost, {{ ansible_eth1['ipv4']['address'] }}'"
+  }
+}
+
+db: {
+  username: "I0DpOxfN0GmNhRSn8Fvt",
+  password: "AtO0K9HcKjs0rqUW22EtOUWYta89I4IkrvDuA60KCtOqCSEj0m3YLzNtTHrtYBL",
+  name:     "postcode_lookup_production",
+  extensions: [
+    { name: "postgis", schema: 'shared_extensions' },
+    { name: "hstore", schema: 'shared_extensions' }
+  ]
+}

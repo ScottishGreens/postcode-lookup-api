@@ -1,0 +1,12 @@
+{
+	"service": {
+		"name": "nginx",
+		"tags": ["nginx"],
+		"port": 80,
+		"check": {
+			"notes": "Check nginx is running",
+			"script": "/usr/local/bin/check_nginx.sh",
+			"interval": "10s"
+		}
+	}
+}
