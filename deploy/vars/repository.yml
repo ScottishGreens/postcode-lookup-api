@@ -1,5 +1,5 @@
 repository: {
-  url:     "git@bitbucket.org:farmgeek/tennants-5-api.git",
+  url:     "git@bitbucket.org:scottishgreens/postcode_lookup_api.git",
   branch:  "master",
   dest:    "/var/www/{{ nginx.vhost|lower|replace('.', '_') }}",
   user:    "deploy"

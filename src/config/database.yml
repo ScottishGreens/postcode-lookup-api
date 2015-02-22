@@ -13,6 +13,6 @@ test:
 
 production:
   <<: *default
-  database: postcode_lookup_production
-  username: postcode_lookup
-  password: <%= ENV['POSTCODE_LOOKUP_DATABASE_PASSWORD'] %>
+  database: <%= Diplomat.get('greens/postcode/db/name') %>
+  username: <%= Diplomat.get('greens/postcode/db/username') %>
+  password: <%= Diplomat.get('greens/postcode/db/password') %>
