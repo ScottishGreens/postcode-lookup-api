@@ -5,9 +5,9 @@ class PostcodeLookupService
     sql = <<-SQL
     SELECT
       p.postcode as postcode,
-      c.name as constituency,
-      w.name as ward,
-      r.name as region
+      replace(c.name, ' P Const', '') as constituency,
+      replace(w.name, ' Ward', '') as ward,
+      replace(r.name, ' PER', '') as region
     FROM 
       public.postcodes as p
 
